@@ -8,7 +8,7 @@
 #define FALSE 0
 
 char* lsh_get_command();
-char** lsh_split_command(char* line);
+char** lsh_split_command(char*);
 int lsh_execute(char**);
 void lsh_loop();
 
@@ -67,16 +67,13 @@ int lsh_exit(char** args)
 
 char* lsh_get_command()
 {
-	/*
-	char c;
+	char c, prev = ' ';
 	int buf_size = MAX_COMMAND_SIZE;
-	*/
 
 	char* command = NULL; 
 	ssize_t position = 0;
-	size_t size;
+	//size_t size;
 	
-	/*
 	command = malloc(sizeof(char) * buf_size);
 	if (command == NULL) {
 		perror("command malloc() failed.");
@@ -85,11 +82,18 @@ char* lsh_get_command()
 	
 	while (TRUE) {
 		c = getchar();
-		if (c == EOF || c == '\n') {
+		if (c == EOF || (prev != '\\' && c == '\n')) {
 			command[position] = '\0';		
 			return command;
 		} else {
-			command[position++] = c;
+			if (prev == '\\' && c == '\n') {
+				printf(">> ");	
+				continue;
+			} else {
+				prev = c;
+				if (c == '\\') continue;
+				command[position++] = c;
+			}
 		}
 
 		if (position >= buf_size) {
@@ -101,8 +105,9 @@ char* lsh_get_command()
 			}
 		}
 	}
-	*/
 
+	// By using getine, it's harder to check if command has \ or \n
+	/*
 	if ((position = getline(&command, &size, stdin)) != -1) {
 		command[position] = '\n';
 		return command;
@@ -110,6 +115,7 @@ char* lsh_get_command()
 		perror("Error getline().");
 		exit(EXIT_FAILURE);
 	}
+	*/
 }
 
 char** lsh_split_command(char* line)
@@ -210,6 +216,7 @@ void lsh_loop()
 		printf("> ");
 		line = lsh_get_command();
 		args = lsh_split_command(line);
+		// TODO: remove all backslash from args.
 		status = lsh_execute(args);
 
 		free(line);
