@@ -10,7 +10,7 @@
 char* lsh_get_command();
 char** lsh_split_command(char* line);
 int lsh_execute(char**);
-int lsh_loop();
+void lsh_loop();
 
 int lsh_cd(char**);
 int lsh_help(char**);
@@ -150,7 +150,7 @@ char** lsh_split_command(char* line)
 int lsh_launch(char** args)
 {
 	int status;
-	pid_t pid, c_pid;
+	pid_t pid;
 
 	
 	// if nothing was entered, then just return 1 to continue
@@ -168,7 +168,7 @@ int lsh_launch(char** args)
 		fprintf(stderr, "fork() error.");
 		return 0;
 	} else { // parent
-		c_pid = waitpid(pid, &status, 0);	
+		waitpid(pid, &status, 0);	
 
 		if (!WIFEXITED(status)) {
 			printf("exited unnormally, status=%d\n", WEXITSTATUS(status));
@@ -200,7 +200,7 @@ int lsh_execute(char** args)
 	return lsh_launch(args);		
 }
 
-int lsh_loop()
+void lsh_loop()
 {
 	char* line;
 	char** args; 
