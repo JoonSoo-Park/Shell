@@ -16,8 +16,16 @@ int lsh_cd(char**);
 int lsh_help(char**);
 int lsh_exit(char**);
 
-#define MAX_COMMAND_SIZE 1024
+#define MAX_COMMAND_SIZE 5
 #define LSH_TOK_BUFSIZE 2
+
+enum COMMAND_GET_CASE {
+	END_OF_FILE,
+	DEFAULT,
+	ESCAPE_CHARACTER,
+	SINGLE_QUOTE,
+	DOUBLE_QUOTE
+};
 
 char* builtin_str[] = {
 	"cd",
@@ -65,14 +73,48 @@ int lsh_exit(char** args)
 	return 0;
 }
 
+int command_get_case(char c)
+{
+	if (c == EOF || c == '\n') {
+		return END_OF_FILE;
+	}
+	else if (c == '\\') {
+		return ESCAPE_CHARACTER;
+	}
+	else if (c == '\'') {
+		return SINGLE_QUOTE; 
+	}
+	else if (c == '\"') {
+		return DOUBLE_QUOTE;
+	}
+	else {
+		return DEFAULT;
+	}
+}
+
+int command_append(char** command, int *buf_size, ssize_t *position)
+{
+	if (*position >= *buf_size) {
+		*buf_size += MAX_COMMAND_SIZE;
+		*command = realloc(*command, *buf_size);
+		if (*command == NULL) {
+			perror("Command realloc() failed.");
+			exit(EXIT_FAILURE);
+		}
+		printf("realloc size : %d\n", *buf_size);
+	}
+
+	return 1;
+}
+
 char* lsh_get_command()
 {
-	char c, prev = ' ';
+	char c;
 	int buf_size = MAX_COMMAND_SIZE;
+	int command_case_res;
 
 	char* command = NULL; 
 	ssize_t position = 0;
-	//size_t size;
 	
 	command = malloc(sizeof(char) * buf_size);
 	if (command == NULL) {
@@ -82,28 +124,17 @@ char* lsh_get_command()
 	
 	while (TRUE) {
 		c = getchar();
-		if (c == EOF || (prev != '\\' && c == '\n')) {
-			command[position] = '\0';		
+		command_case_res = command_get_case(c);
+		if (command_case_res == END_OF_FILE) {
+			command[position] = '\0';
 			return command;
+		} else if (command_case_res == DEFAULT) {
+			command[position++] = c;
 		} else {
-			if (prev == '\\' && c == '\n') {
-				printf(">> ");	
-				continue;
-			} else {
-				prev = c;
-				if (c == '\\') continue;
-				command[position++] = c;
-			}
+
 		}
 
-		if (position >= buf_size) {
-			buf_size += MAX_COMMAND_SIZE;
-			command = realloc(command, buf_size);
-			if (command == NULL) {
-				perror("command realloc() failed.");
-				exit(EXIT_FAILURE);
-			}
-		}
+		command_append(&command, &buf_size, &position);
 	}
 
 	// By using getine, it's harder to check if command has \ or \n
