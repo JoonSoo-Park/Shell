@@ -1,5 +1,8 @@
-#ifndef FEATURES_H
-#define FEATURES_H
+#ifndef FEATURE_H
+#define FEATURE_h
+#include <stdio.h>
+
+int escape_character(char**, int*, ssize_t*);
 
 
 

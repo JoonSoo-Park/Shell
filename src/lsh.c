@@ -8,10 +8,13 @@
 #include "./constants.h"
 #include "./command_things.h"
 #include "./builtin.h"
+#include "./feature.h"
 
 
 extern const char* builtin_str[];
 extern int (*builtin_func[]) (char**);
+
+extern int (*feature_func[]) (char**, int*, ssize_t*);
 
 char* lsh_get_command()
 {
@@ -31,6 +34,7 @@ char* lsh_get_command()
 	while (TRUE) {
 		c = getchar();
 		command_case_res = command_get_case(c);
+
 		if (command_case_res == END_OF_FILE) {
 			command[position] = '\0';
 			return command;
@@ -38,6 +42,7 @@ char* lsh_get_command()
 			command[position++] = c;
 		} else {
 			// TODO: ex) single quotes, double quotes
+			feature_func[command_case_res](&command, &buf_size, &position);
 		}
 
 		command_append(&command, &buf_size, &position);

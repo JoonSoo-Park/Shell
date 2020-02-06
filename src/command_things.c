@@ -36,4 +36,3 @@ int command_append(char** command, int *buf_size, ssize_t *position)
 
 	return 1;
 }
-

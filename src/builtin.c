@@ -4,12 +4,14 @@
 
 const char* builtin_str[] = {
 	"cd",
+	"echo",
 	"help",
 	"exit"
 };
 
 int (*builtin_func[]) (char**) = {
 	&lsh_cd,
+	&lsh_echo,
 	&lsh_help,
 	&lsh_exit
 };
@@ -28,6 +30,11 @@ int lsh_cd(char** args)
 			perror("change directory failed.");
 		}
 	}
+	return 1;
+}
+
+int lsh_echo(char** args)
+{
 	return 1;
 }
 
