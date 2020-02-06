@@ -1,7 +1,10 @@
 #ifndef COMMAND_THINGS_H
 #define COMMAND_THINGS_H
 
-#include <stdlib.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 enum COMMAND_GET_CASE {
 	END_OF_FILE,

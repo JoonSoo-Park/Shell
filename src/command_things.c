@@ -1,6 +1,7 @@
 #include "./command_things.h"
 #include "./constants.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 
 int command_get_case(char c)
