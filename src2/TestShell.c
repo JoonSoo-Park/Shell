@@ -153,8 +153,6 @@ int lsh_launch_pipe(char** args, char** argsPipe)
 	int pipefd[2];	
 	pid_t p1, p2;
 
-	printf("lsh_launch_pipe\n");
-
 	if (pipe(pipefd) < 0) {
 		fprintf(stderr, "Pipe could not be initialized");
 		return 0;
@@ -166,7 +164,6 @@ int lsh_launch_pipe(char** args, char** argsPipe)
 		return 0;
 	}
 	if (p1 == 0) {
-		printf("child1\n");
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
@@ -182,11 +179,9 @@ int lsh_launch_pipe(char** args, char** argsPipe)
 			return 0;
 		}
 		if (p2 == 0) {
-			printf("child2\n");
 			close(pipefd[1]);
 			dup2(pipefd[0], STDIN_FILENO);
 			close(pipefd[0]);
-			printf("child2-2\n");
 
 			if (execvp(argsPipe[0], argsPipe) < 0) {
 				fprintf(stderr, "Could not execute command 2...");
