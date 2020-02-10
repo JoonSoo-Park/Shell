@@ -15,8 +15,13 @@
 #define TRUE 1
 #define FALSE 0
 
+#define READ_END 0
+#define WRITE_END 1
+
 #define LSH_TOK_BUFSIZE 64
 #define LSH_TOK_DELIM " \t\r\n\a"
+
+#define BUFFER_SIZE 1024
 
 int lsh_cd(char **args);
 int lsh_help(char **args);
@@ -143,7 +148,6 @@ int lsh_launch(char **args)
 	return 1;
 }
 
-/*
 int lsh_launch_pipe(char** args, char** argsPipe)
 {
 	int pipefd[2];	
@@ -190,51 +194,7 @@ int lsh_launch_pipe(char** args, char** argsPipe)
 			}
 		}
 		else {
-			wait(NULL);
-			wait(NULL);
-		}
-	}
-}
-*/
-
-int lsh_launch_pipe(char** args, char** argsPipe)
-{
-	int pipefd[2];
-	pipe(pipefd);
-	int i;
-	pid_t pid1, pid2;
-	pid1 = fork();
-
-	if (pid1 == -1) {
-		char* error = strerror(errno);
-		printf("error fork!!\n");
-		return 0;
-	}
-	if (pid1 == 0) {
-		close(pipefd[1]);
-		dup2(pipefd[0], 0);
-		close(pipefd[0]);
-		execvp(argsPipe[0], argsPipe);
-		char *error = strerror(errno);
-		printf("unknown command\n");
-		return 0;
-	} else {
-		pid2 = fork();
-		
-		if (pid2 == -1) {
-			char* error = strerror(errno);
-			printf("error fork!!\n");
-			return 0;
-		} 
-		if (pid2 == 0) {
-			close(pipefd[0]);
-			dup2(pipefd[1], 1);
 			close(pipefd[1]);
-			execvp(args[0], args);
-			char *error = strerror(errno);
-			printf("unknown command\n");
-		}
-		else {
 			wait(NULL);
 			wait(NULL);
 		}
