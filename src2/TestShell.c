@@ -25,12 +25,16 @@
 
 int lsh_cd(char **args);
 int lsh_history(char **args);
+int lsh_jobs(char **args);
 int lsh_help(char **args);
 int lsh_exit(char **args);
+
+int lsh_launch(char **args);
 
 char *builtin_str[] = {
 	"cd",
 	"history",
+	"jobs",
 	"help",
 	"exit"
 };
@@ -38,6 +42,7 @@ char *builtin_str[] = {
 int (*builtin_func[]) (char**) = {
 	&lsh_cd,
 	&lsh_history,
+	&lsh_jobs,
 	&lsh_help,
 	&lsh_exit
 };
@@ -68,6 +73,12 @@ int lsh_history(char **args)
 		free_history_entry (mylist[i]);
 	}
 	return 1;
+}
+
+int lsh_jobs(char **args)
+{
+	args[0] = "ps";	
+	lsh_launch(args);
 }
 
 int lsh_help(char **args)
