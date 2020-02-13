@@ -78,7 +78,7 @@ int lsh_history(char **args)
 int lsh_jobs(char **args)
 {
 	args[0] = "ps";	
-	lsh_launch(args);
+	return lsh_launch(args);
 }
 
 int lsh_help(char **args)
@@ -220,6 +220,7 @@ int lsh_launch_pipe(char** args, char** argsPipe)
 			wait(NULL);
 		}
 	}
+	return 1;
 }
 
 int lsh_execute(char **args, char** argsPipe)
